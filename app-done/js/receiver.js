@@ -1,186 +1,129 @@
 const context = cast.framework.CastReceiverContext.getInstance();
+context.setLoggerLevel(cast.framework.LoggerLevel.DEBUG);
 const playerManager = context.getPlayerManager();
-
 const playbackConfig = new cast.framework.PlaybackConfig();
-
-//Media Sample API Values
-const SAMPLE_URL = "/content.json";
-const StreamType = {
-  DASH: "application/dash+xml",
-  HLS: "application/x-mpegurl",
+playbackConfig.licenseUrl = "https://widevine-proxy.appspot.com/proxy";
+playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+playbackConfig.licenseRequestHandler = (requestInfo) => {
+  requestInfo.headers = {
+    "Content-Type": "application/dash+xml",
+    customdata: "https://bitmovin-a.akamaihd.net/content/art-of-motion_drm/mpds/11331.mpd",
+  };
+  return playbackConfig;
 };
-const TEST_STREAM_TYPE = StreamType.DASH;
+context.start({ playbackConfig: playbackConfig });
 
-// Debug Logger
-const castDebugLogger = cast.debug.CastDebugLogger.getInstance();
-const LOG_TAG = "MyAPP.LOG";
+// const context = cast.framework.CastReceiverContext.getInstance();
+// const playerManager = context.getPlayerManager();
 
-// Enable debug logger and show a 'DEBUG MODE' overlay at top left corner.
-// me
-castDebugLogger.setEnabled(true);
+// const playbackConfig = new cast.framework.PlaybackConfig();
+// Customize the license url for playback
+// playbackConfig.licenseUrl =
+// "https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1Kb0AJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAAZYMrGC7H4sssZAqOxLIoIs4QdqDXjEuB9PPgpcDlN6Vlz16BaCYxYjMTjK8dcO7SeCNiJyG4fbusNnYGCJZLmBaBph3E3fwEUvhp66wNH0aXZ7aN-_QQ3ITM6r8brRqeoLyA5eP9kZaaqnWoj3bVUdujCA";
 
-// Show debug overlay
-// castDebugLogger.showDebugLogs(true);
+// playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+// playbackConfig.licenseRequestHandler = (requestInfo) => {
+//   requestInfo.withCredentials = true;
+// };
 
-// Set verbosity level for Core events.
-castDebugLogger.loggerLevelByEvents = {
-  "cast.framework.events.category.CORE": cast.framework.LoggerLevel.INFO,
-  "cast.framework.events.EventType.MEDIA_STATUS": cast.framework.LoggerLevel.DEBUG,
-};
+// Update playback config licenseUrl according to provided value in load request.
 
-// Set verbosity level for custom tags.
-castDebugLogger.loggerLevelByTags = {
-  LOG_TAG: cast.framework.LoggerLevel.DEBUG,
-};
-
-//////////////// DRM  /////////////////////////////
-
-//////////////// DRM  /////////////////////////////
-
-function makeRequest(method, url) {
-  return new Promise(function (resolve, reject) {
-    let xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.onload = function () {
-      if (this.status >= 200 && this.status < 300) {
-        resolve(JSON.parse(xhr.response));
-      } else {
-        reject({
-          status: this.status,
-          statusText: xhr.statusText,
-        });
-      }
-    };
-    xhr.onerror = function () {
-      reject({
-        status: this.status,
-        statusText: xhr.statusText,
-      });
-    };
-    xhr.send();
-  });
-}
-
-playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (request) => {
-  castDebugLogger.info(LOG_TAG, "Intercepting LOAD request");
-
-  // Map contentId to entity
-  if (request.media && request.media.entity) {
-    request.media.contentId = request.media.entity;
-  }
-  // if (request.media.customData && request.media.customData.licenseUrl) {
-  //   playbackConfig.licenseUrl = request.media.customData.licenseUrl;
-  // }
-
-  return new Promise((resolve, reject) => {
-    // Fetch repository metadata
-    makeRequest("GET", SAMPLE_URL).then(function (data) {
-      // Obtain resources by contentId from downloaded repository metadata.
-      let item = data[request.media.contentId];
-      if (!item) {
-        // Content could not be found in repository
-        castDebugLogger.error(LOG_TAG, "Content not found");
-        reject();
-      } else {
-        // Adjusting request to make requested content playable
-        request.media.contentType = TEST_STREAM_TYPE;
-
-        // Configure player to parse DASH content
-        if (TEST_STREAM_TYPE == StreamType.DASH) {
-          // default
-          request.media.contentUrl = item.stream.dash;
-          castDebugLogger.error(LOG_TAG, "DASH ");
-
-          // if (request.media.customData.licenseUrl) {
-          //   playerManager.setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
-          //     playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
-          //     playbackConfig.licenseUrl = request.media.customData.licenseUrl;
-          //     if (
-          //       typeof request.media.customData.credentials === "boolean" ||
-          //       typeof request.media.customData.licenseHeaders === "object"
-          //     ) {
-          //       playbackConfig.licenseRequestHandler = (requestInfo) => {
-          //         if (typeof request.media.customData.credentials === "boolean") {
-          //           requestInfo.withCredentials = request.media.customData.credentials;
-          //         }
-          //         if (typeof request.media.customData.licenseHeaders === "object") {
-          //           requestInfo.headers = request.media.customData.licenseHeaders;
-          //         }
-          //       };
-          //     }
-          //     return playbackConfig;
-          //   });
-          // }
-        }
-
-        // Configure player to parse HLS content
-        else if (TEST_STREAM_TYPE == StreamType.HLS) {
-          request.media.contentUrl = item.stream.hls_ts;
-
-          console.log("HERE WE GO");
-          console.log(request.media.contentUrl);
-          request.media.hlsSegmentFormat = cast.framework.messages.HlsSegmentFormat.TS;
-          request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.TS;
-        }
-
-        castDebugLogger.warn(LOG_TAG, "Playable URL:", request.media.contentUrl);
-
-        // Add metadata
-        let metadata = new cast.framework.messages.GenericMediaMetadata();
-        metadata.title = item.title;
-        metadata.subtitle = item.author;
-
-        request.media.metadata = metadata;
-
-        // Resolve request
-        resolve(request);
-      }
-    });
-  });
-});
-
-// Optimizing for smart displays
-const touchControls = cast.framework.ui.Controls.getInstance();
-const playerData = new cast.framework.ui.PlayerData();
-const playerDataBinder = new cast.framework.ui.PlayerDataBinder(playerData);
-
-let browseItems = getBrowseItems();
-
-function getBrowseItems() {
-  let browseItems = [];
-  makeRequest("GET", SAMPLE_URL).then(function (data) {
-    for (let key in data) {
-      let item = new cast.framework.ui.BrowseItem();
-      item.entity = key;
-      item.title = data[key].title;
-      item.subtitle = data[key].description;
-      item.image = new cast.framework.messages.Image(data[key].poster);
-      item.imageType = cast.framework.ui.BrowseImageType.MOVIE;
-      browseItems.push(item);
-    }
-  });
-  return browseItems;
-}
-
-// for browse media on smart display
-let browseContent = new cast.framework.ui.BrowseContent();
-browseContent.title = "Up Next";
-browseContent.items = browseItems;
-browseContent.targetAspectRatio = cast.framework.ui.BrowseImageAspectRatio.LANDSCAPE_16_TO_9;
-
-playerDataBinder.addEventListener(cast.framework.ui.PlayerDataEventType.MEDIA_CHANGED, (e) => {
-  if (!e.value) return;
-
-  // Media browse
-  touchControls.setBrowseContent(browseContent);
-
-  // Clear default buttons and re-assign
-  touchControls.clearDefaultSlotAssignments();
-  touchControls.assignButton(
-    cast.framework.ui.ControlsSlot.SLOT_PRIMARY_1,
-    cast.framework.ui.ControlsButton.SEEK_BACKWARD_30
-  );
-});
+// context.getPlayerManager().setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
+//   if (loadRequest.media.customData && loadRequest.media.customData.licenseUrl) {
+//     playbackConfig.licenseUrl = loadRequest.media.customData.licenseUrl;
+//   }
+//   return playbackConfig;
+// });
 
 // context.start();
-context.start({ playbackConfig: playbackConfig });
+// context.start({ playbackConfig: playbackConfig });
+
+// const playbackConfig = new cast.framework.PlaybackConfig();
+
+// request.media.contentUrl = item.stream.dash;
+// request.media.contentType = "application/dash+xml";
+
+// const SAMPLE_URL = "./content.json";
+
+// function makeRequest(method, url) {
+//   return new Promise(function (resolve, reject) {
+//     let xhr = new XMLHttpRequest();
+//     xhr.open(method, url);
+//     xhr.onload = function () {
+//       if (this.status >= 200 && this.status < 300) {
+//         resolve(JSON.parse(xhr.response));
+//       } else {
+//         reject({
+//           status: this.status,
+//           statusText: xhr.statusText,
+//         });
+//       }
+//     };
+//     xhr.onerror = function () {
+//       reject({
+//         status: this.status,
+//         statusText: xhr.statusText,
+//       });
+//     };
+//     xhr.send();
+//   });
+// }
+
+// playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (request) => {
+//   return new Promise((resolve, reject) => {
+//     // Fetch content repository by requested contentId
+//     makeRequest("GET", SAMPLE_URL).then(function (data) {
+//       let item = data[request.media.contentId];
+//       if (!item) {
+//         // Content could not be found in repository
+//         reject();
+//       } else {
+//         // Adjusting request to make requested content playable
+//         request.media.contentUrl = item.stream.dash;
+//         request.media.contentType = "application/dash+xml";
+
+//         // Customize the license url for playback
+//         playbackConfig.licenseUrl =
+//           "https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1Kb0AJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAAZYMrGC7H4sssZAqOxLIoIs4QdqDXjEuB9PPgpcDlN6Vlz16BaCYxYjMTjK8dcO7SeCNiJyG4fbusNnYGCJZLmBaBph3E3fwEUvhp66wNH0aXZ7aN-_QQ3ITM6r8brRqeoLyA5eP9kZaaqnWoj3bVUdujCA";
+//         playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+//         playbackConfig.licenseRequestHandler = (requestInfo) => {
+//           requestInfo.withCredentials = true;
+//         };
+
+//         // Update playback config licenseUrl according to provided value in load request.
+//         context.getPlayerManager().setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
+//           if (loadRequest.media.customData && loadRequest.media.customData.licenseUrl) {
+//             playbackConfig.licenseUrl = loadRequest.media.customData.licenseUrl;
+//           }
+//           return playbackConfig;
+//         });
+
+//         // Add metadata
+//         let metadata = new cast.framework.messages.GenericMediaMetadata();
+//         metadata.title = item.title;
+//         metadata.subtitle = item.author;
+
+//         request.media.metadata = metadata;
+
+//         // Resolve request
+//         resolve(request);
+//       }
+//     });
+//   });
+// });
+
+// Debug Logger
+// const castDebugLogger = cast.debug.CastDebugLogger.getInstance();
+
+// // Enable debug logger and show a 'DEBUG MODE' overlay at top left corner.
+// castDebugLogger.setEnabled(true);
+
+// // Set verbosity level for Core events.
+// castDebugLogger.loggerLevelByEvents = {
+//   "cast.framework.events.category.CORE": cast.framework.LoggerLevel.INFO,
+//   "cast.framework.events.EventType.MEDIA_STATUS": cast.framework.LoggerLevel.DEBUG,
+// };
+
+// context.start();
+
+// context.start({ playbackConfig: playbackConfig });
