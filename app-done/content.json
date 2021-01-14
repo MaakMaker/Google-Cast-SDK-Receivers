@@ -16,7 +16,7 @@
     "poster": "https://storage.googleapis.com/cpe-sample-media/content/elephants_dream/images/screenshot7.png",
     "prog": "https://storage.googleapis.com/cpe-sample-media/content/elephants_dream/prog/elephants_dream_prog.mp4",
     "stream": {
-      "dash": "https://storage.googleapis.com/cpe-sample-media/content/tears_of_steel/tears_of_steel_m4s_master.mpd"
+      "dash": "https://dkoe4aj0tnyxd.cloudfront.net/us-en_001/4c7bcc6c554c14c21ccbb850209db6a3/manifests/sd/stream.mpd"
     },
     "title": "DASH stream withOut DRM"
   },
