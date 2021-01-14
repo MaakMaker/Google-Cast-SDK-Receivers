@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
 
@@ -38,15 +39,19 @@
             0% {
                 opacity: 1;
             }
+
             25% {
                 opacity: 0;
             }
+
             50% {
                 opacity: 0;
             }
+
             75% {
                 opacity: 1;
             }
+
             100% {
                 opacity: 1;
             }
@@ -75,75 +80,94 @@
         }
     </style>
 </head>
+
 <body>
-<div id="player-wrapper"></div>
-<div id="app-status-overlay">
-    <div id="app-status-overlay-loading">
-        <div class="app-status-overlay-loading-dot"></div>
-        <div class="app-status-overlay-loading-dot"></div>
-        <div class="app-status-overlay-loading-dot"></div>
+    <div id="player-wrapper"></div>
+    <div id="app-status-overlay">
+        <div id="app-status-overlay-loading">
+            <div class="app-status-overlay-loading-dot"></div>
+            <div class="app-status-overlay-loading-dot"></div>
+            <div class="app-status-overlay-loading-dot"></div>
+        </div>
     </div>
-</div>
 
-<link rel="stylesheet" href="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css">
-<script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js"></script>
-<script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
-<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.js" integrity="sha256-uvyqD81XGEqlTzEGkl+5L73IUlWTXtdLhfnUG5n3FbE="
-        crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdn.bitmovin.com/player/cast/8.14.1-2/bitmovinplayer-remotereceiver.js"></script>
-<script type="text/javascript">
+    <link rel="stylesheet" href="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css">
+    <script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js"></script>
+    <script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.js"
+        integrity="sha256-uvyqD81XGEqlTzEGkl+5L73IUlWTXtdLhfnUG5n3FbE=" crossorigin="anonymous"></script>
+    <script type="text/javascript"
+        src="https://cdn.bitmovin.com/player/cast/8.14.1-2/bitmovinplayer-remotereceiver.js"></script>
+    <script type="text/javascript">
 
-  // Hide app loading overlay
-  const hideStatusOverlay = () => {
-    document.getElementById('app-status-overlay').style.display = 'none';
-  };
+        // Hide app loading overlay
+        const hideStatusOverlay = () => {
+            document.getElementById('app-status-overlay').style.display = 'none';
+        };
 
-  window.onload = () => {
+        window.onload = () => {
 
-    // Bitmovin Player configuration properties
-    const conf = {
-      key: 'YOUR-KEY-HERE',
-      tweaks: {
-        max_buffer_level: 20,
-      },
-      events: {},
-      ui: false,
-    };
+            // Bitmovin Player configuration properties
+            const conf = {
+                key: 'e84fe91a-d890-4246-9f00-9896922484ee',
+                tweaks: {
+                    max_buffer_level: 20,
+                },
+                network: {
+                    preprocessHttpRequest: function (type, request) {
+                        console.log(type, request);
+                        if (type === bitmovin.player.HttpRequestType.DRM_LICENSE_WIDEVINE) {
+                            function getDrmHeader() {
+                                return fetch('https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1Kb0AJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAAZYMrGC7H4sssZAqOxLIoIs4QdqDXjEuB9PPgpcDlN6Vlz16BaCYxYjMTjK8dcO7SeCNiJyG4fbusNnYGCJZLmBaBph3E3fwEUvhp66wNH0aXZ7aN-_QQ3ITM6r8brRqeoLyA5eP9kZaaqnWoj3bVUdujCA');
+                            };
+                            return getDrmHeader().then(function (response) {
+                                return response.json();
+                            }).then(function (data) {
+                                request.headers['drmheader'] = data.licenseHeader;
+                                return request;
+                            });
+                        }
+                    }
+                },
+                events: {},
+                ui: false,
+            };
 
-    // Instantiate a Bitmovin player
-    const player = new bitmovin.player.Player(document.getElementById('player-wrapper'), conf);
+            // Instantiate a Bitmovin player
+            const player = new bitmovin.player.Player(document.getElementById('player-wrapper'), conf);
 
-    // Hide loading overlay when a source is loaded
-    player.on(bitmovin.player.PlayerEvent.SourceLoaded, hideStatusOverlay);
+            // Hide loading overlay when a source is loaded
+            player.on(bitmovin.player.PlayerEvent.SourceLoaded, hideStatusOverlay);
 
-    // Hide overlay when an error happens (avoids hidden errors during startup)
-    player.on(bitmovin.player.PlayerEvent.Error, hideStatusOverlay);
+            // Hide overlay when an error happens (avoids hidden errors during startup)
+            player.on(bitmovin.player.PlayerEvent.Error, hideStatusOverlay);
 
-    require(['remotecontrol/GoogleCastRemoteControlReceiver'], (gcr) => {
-      const googleCastRemoteControlReceiver = new gcr.GoogleCastRemoteControlReceiver(player);
+            require(['remotecontrol/GoogleCastRemoteControlReceiver'], (gcr) => {
+                const googleCastRemoteControlReceiver = new gcr.GoogleCastRemoteControlReceiver(player);
 
-      // Handler that takes properties from the remotecontrol.customReceiverConfig configuration for use within the receiver
-      googleCastRemoteControlReceiver.setCastMetadataListener((metadata) => {
-        switch (metadata.type) {
-          case 'customReceiverConfig':
-            const customReceiverConfig = metadata.data;
-            if (customReceiverConfig.receiverStylesheetUrl != null) {
-              const head = document.getElementsByTagName('head')[0];
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.type = 'text/css';
-              link.href = customReceiverConfig.receiverStylesheetUrl;
-              head.appendChild(link);
-            }
-            break;
+                // Handler that takes properties from the remotecontrol.customReceiverConfig configuration for use within the receiver
+                googleCastRemoteControlReceiver.setCastMetadataListener((metadata) => {
+                    switch (metadata.type) {
+                        case 'customReceiverConfig':
+                            const customReceiverConfig = metadata.data;
+                            if (customReceiverConfig.receiverStylesheetUrl != null) {
+                                const head = document.getElementsByTagName('head')[0];
+                                const link = document.createElement('link');
+                                link.rel = 'stylesheet';
+                                link.type = 'text/css';
+                                link.href = customReceiverConfig.receiverStylesheetUrl;
+                                head.appendChild(link);
+                            }
+                            break;
+                    }
+                })
+            });
+
+            // Load the built-in Bitmovin Cast Receiver UI
+            const uimanager = bitmovin.playerui.UIFactory.buildDefaultCastReceiverUI(player);
         }
-      })
-    });
-
-    // Load the built-in Bitmovin Cast Receiver UI
-    const uimanager = bitmovin.playerui.UIFactory.buildDefaultCastReceiverUI(player);
-  }
-</script>
+    </script>
 </body>
+
 </html>
