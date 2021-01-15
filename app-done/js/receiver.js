@@ -68,6 +68,7 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     // Fetch repository metadata
     makeRequest("GET", SAMPLE_URL).then(function (data) {
       // Obtain resources by contentId from downloaded repository metadata.
+      // castDebugLogger.error(" Testing -----> ",  JSON.stringify());
       let item = data[request.media.contentId];
       if (!item) {
         // Content could not be found in repository
