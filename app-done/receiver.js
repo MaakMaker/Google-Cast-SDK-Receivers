@@ -2,7 +2,10 @@ window.onload = function () {
   cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.ERROR);
   cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.ERROR);
   var mediaElement = document.getElementById("vid");
-  window.mediaManager = new cast.receiver.MediaManager(mediaElement);
+
+  const playerManager = context.getPlayerManager();
+  // window.mediaManager = new cast.receiver.MediaManager(mediaElement);//
+
   window.defaultOnLoad = mediaManager.onLoad.bind(mediaManager);
   mediaManager.onLoad = function (event) {
     if (window.player !== null) {
@@ -126,7 +129,10 @@ window.onload = function () {
 
   window.player = null;
   console.log("013 Application is ready, starting system");
-  window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+  // // manages the cast session, senders, sending custom messages, and global system events
+  const context = cast.framework.CastReceiverContext.getInstance();
+
+  // window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance(); //
   castReceiverManager.onSenderDisconnected = function (event) {
     console.log("Received Sender Disconnected event: " + event.data);
     if (window.castReceiverManager.getSenders().length == 0) {
