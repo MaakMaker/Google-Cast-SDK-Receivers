@@ -140,16 +140,16 @@
             }
         };
         var source = {
-            dash: 'https://npfltv.akamaized.net/media/movies/hybrikBulk_day3_mfmvssunshine_38103451d435107cad172a23eb16ebf5/stream.mpd',
-            // hls: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+            // dash: 'https://npfltv.akamaized.net/media/movies/hybrikBulk_day3_mfmvssunshine_38103451d435107cad172a23eb16ebf5/stream.mpd',
+            hls: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
             // progressive: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
             poster: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/poster.jpg',
 
-            drm: {
-                widevine: {
-                    LA_URL: 'https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1Kb0AJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAAZYMrGC7H4sssZAqOxLIoIs4QdqDXjEuB9PPgpcDlN6Vlz16BaCYxYjMTjK8dcO7SeCNiJyG4fbusNnYGCJZLmBaBph3E3fwEUvhp66wNH0aXZ7aN-_QQ3ITM6r8brRqeoLyA5eP9kZaaqnWoj3bVUdujCA'
-                },
-            }
+            // drm: {
+            //     widevine: {
+            //         LA_URL: 'https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1Kb0AJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAAZYMrGC7H4sssZAqOxLIoIs4QdqDXjEuB9PPgpcDlN6Vlz16BaCYxYjMTjK8dcO7SeCNiJyG4fbusNnYGCJZLmBaBph3E3fwEUvhp66wNH0aXZ7aN-_QQ3ITM6r8brRqeoLyA5eP9kZaaqnWoj3bVUdujCA'
+            //     },
+            // }
         };
 
         player = new bitmovin.player.Player(document.getElementById('player'), conf);
