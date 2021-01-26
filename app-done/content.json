@@ -5,7 +5,7 @@
     "poster": "https://storage.googleapis.com/cpe-sample-media/content/big_buck_bunny/images/screenshot1.png",
     "prog": "https://storage.googleapis.com/cpe-sample-media/content/big_buck_bunny/prog/big_buck_bunny_prog.mp4",
     "stream": {
-      "hls": "https://storage.googleapis.com/cpe-sample-media/content/big_buck_bunny/big_buck_bunny_m4s_master.m3u8",
+      "hls": "https://npfltv.akamaized.net/media/movies/hybrikBulk_day1_akwaunitedvsdakkadafc_fbbb89951e383c2f86c71c8a5f49674e/stream.m3u8",
       "hls_ts": "https://npfltv.akamaized.net/media/movies/hybrikBulk_day1_akwaunitedvsdakkadafc_fbbb89951e383c2f86c71c8a5f49674e/stream.m3u8"
     },
     "title": "HLS stream withOut DRM"
