@@ -75,6 +75,8 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   } else if (streamurl.lastIndexOf(".m3u8") >= 0) {
     request.media.contentType = StreamType.HLS;
     castDebugLogger.error(" >>> Here is HLS <<< ");
+    request.media.hlsSegmentFormat = cast.framework.messages.HlsSegmentFormat.MPEG2_TS;
+    request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.MPEG2_TS;
   }
 
   let metadata = new cast.framework.messages.GenericMediaMetadata();
