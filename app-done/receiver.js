@@ -28,7 +28,7 @@ window.onload = function () {
           document.getElementById("titleText").innerHTML = event.data.media.metadata.channel_title;
           document.getElementById("channel_logo").src = event.data.media.metadata.channel_logo;
         }
-      } else {  
+      } else {
         data_received = JSON.parse(event.data["media"]["contentId"]);
         var streamurl = data_received.dash;
         document.getElementById("channel_title").innerHTML = data_received.title;
