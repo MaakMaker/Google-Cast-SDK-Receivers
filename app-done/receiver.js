@@ -262,3 +262,85 @@ function updateLevelInfo() {
   }
   $("#slt-player-quality ul").html(html1);
 }
+
+
+
+// rafff
+playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (event) => {
+  castDebugLogger.info(LOG_TAG, "Intercepting LOAD request");
+  castDebugLogger.error(">>> request interceptor <<<  ", event);
+  castDebugLogger.error(
+    ">>> request interceptor string <<<  ",
+    JSON.stringify(event.media && event.media.entity)
+  );
+
+  castDebugLogger.error("============== tester", JSON.stringify(event.media));
+  var data_received = "";
+  if (event.media && event.media.contentId) {
+  var streamurl = event.media.contentId;
+  castDebugLogger.error("============== check pass", event.media.contentId);
+  if (
+    event.media.contentId.endsWith(".m3u8") ||
+    event.media.contentId.endsWith(".mpd") ||
+    event.media.contentId.endsWith(".mp4") ||
+    event.media.contentId.endsWith("/mpd")
+  ) {
+    if (event.media.metadata.channel_title) {
+      var metadata = new cast.framework.messages.GenericMediaMetadata();
+      metadata.title = event.media.metadata.channel_title;
+      metadata.images = event.media.metadata.channel_logo;
+      // metadata.subtitle = event.media.metadata.channel_title;
+      event.media.metadata = metadata;
+    }
+  } else {
+    castDebugLogger.error("-------------->>>> else");
+  }
+  // var initStart = event.media.currentTime || 0;
+  // var autoplay = event.data["autoplay"] || true;
+  var protocol = null;
+  if (streamurl.lastIndexOf(".m3u8") >= 0) {
+    event.media.contentUrl = StreamType.HLS;
+    event.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.MPEG2_TS;
+    castDebugLogger.error("-------------->>>> HLS or M3u8 block");
+  } else if (
+    streamurl.lastIndexOf("/mpd") >= 0 ||
+    streamurl.lastIndexOf(".mpd") >= 0 ||
+    streamurl.indexOf("/Manifest") >= 0 ||
+    streamurl.lastIndexOf(".mp4") >= 0
+  ) {
+  event.media.contentUrl = StreamType.DASH;
+  castDebugLogger.error("-------------->>>> DASH or mpd block");
+  playerManager.setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
+    playbackConfig.contentId =
+      "https://npfltv.akamaized.net/media/movies/hybrikBulk_matchday6_katsina_vsplateau_5504935d8ecca98d22c05e50ad2ab661/stream.mpd";
+    playbackConfig.licenseUrl =
+      "https://wv.service.expressplay.com/hms/wv/rights/?ExpressPlayToken=BQAAABJ1KegAJGFmZWI1ZGY0LTE5N2MtNDMxZi1iYzk2LTEzOWRhYWI4YjM5ZQAAAGAjA8cAqhMNJBipdUVX23P4Xl2FMaDK0OF7L2HXCysN9kmdV82jHydai9jMeTPoOvhsxNSSRc4uCU6h2HyVK42ddpHz2XQUn7yRJnWKnWXF1EZCpCHSPMQiAGLriUQRf4o4FFQo7FFdwJLdr8IE3LRiYC_ODw";
+    playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+    return playbackConfig;
+  });
+  if (
+    typeof data_received.drm != "undefined" &&
+    typeof data_received.drm.widevine != "undefined"
+  ) {
+    host.licenseUrl = data_received.drm.widevine.LA_URL;
+    host.protectionSystem = cast.player.api.ContentProtection.WIDEVINE;
+  } else {
+    playbackConfig.licenseUrl = event.media.customData.licenseUrl;
+    playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+    playbackConfig.licenseRequestHandler = (requestInfo) => {
+      requestInfo.withCredentials = true;
+    };
+  }
+  }
+  }
+  // Add metadata
+  let metadata = new cast.framework.messages.GenericMediaMetadata();
+  metadata.title = "item.title";
+  metadata.subtitle = "item.author";
+
+  event.media.metadata = metadata;
+
+  return event;
+});
+
+context.start(options);

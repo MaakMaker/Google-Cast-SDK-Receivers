@@ -34,23 +34,53 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     request.media.contentId = request.media.contentId;
   }
 
-  context.getPlayerManager().setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
-    castDebugLogger.error(" >>> req <<< ", loadRequest);
-    if (request.media.customData && request.media.customData.licenseUrl) {
-      playbackConfig.licenseUrl = await request.media.customData.licenseUrl;
-      playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
-      // playbackConfig.licenseRequestHandler = (requestInfo) => {
-      //   requestInfo.withCredentials = true;
-      // };
-    }
+  let streamurl = request.media.contentId;
+  castDebugLogger.error(
+    " >>> streamurl.lastIndexOf Streamurl <<< ",
+    streamurl.lastIndexOf("/mpd") >= 0
+  );
+  castDebugLogger.error(
+    " >>> streamurl.lastIndexOf Streamurl <<< ",
+    streamurl.lastIndexOf(".mpd") >= 0
+  );
+  castDebugLogger.error(
+    " >>> streamurl.lastIndexOf Streamurl <<< ",
+    streamurl.lastIndexOf("/Manifest") >= 0
+  );
+  castDebugLogger.error(
+    " >>> streamurl.lastIndexOf Streamurl <<< ",
+    streamurl.lastIndexOf("/mp4") >= 0
+  );
 
-    return playbackConfig;
-  });
+  if (
+    streamurl.lastIndexOf("/mpd") >= 0 ||
+    streamurl.lastIndexOf(".mpd") >= 0 ||
+    streamurl.indexOf("/Manifest") >= 0 ||
+    streamurl.lastIndexOf(".mp4") >= 0
+  ) {
+    request.media.contentType = StreamType.DASH;
+    castDebugLogger.error(" >>> Here is Dash <<< ");
+    context.getPlayerManager().setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
+      castDebugLogger.error(" >>> req <<< ", loadRequest);
+      if (request.media.customData && request.media.customData.licenseUrl) {
+        playbackConfig.licenseUrl = await request.media.customData.licenseUrl;
+        playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+        // playbackConfig.licenseRequestHandler = (requestInfo) => {
+        //   requestInfo.withCredentials = true;
+        // };
+      }
+
+      return playbackConfig;
+    });
+  } else if (streamurl.lastIndexOf(".m3u8") >= 0) {
+    request.media.contentType = StreamType.HLS;
+    castDebugLogger.error(" >>> Here is HLS <<< ");
+  }
 
   let metadata = new cast.framework.messages.GenericMediaMetadata();
   metadata.title = request.media.metadata.channel_title;
-  metadata.subtitle = request.media.metadata.channel_no;
-  request.media.contentType = StreamType.DASH;
+  // metadata.subtitle = request.media.metadata.channel_no;
+  // request.media.contentType = StreamType.DASH;
   request.media.metadata = metadata;
 
   return request;
