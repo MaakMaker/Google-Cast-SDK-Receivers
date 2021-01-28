@@ -66,9 +66,6 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   }
 
   let metadata = new cast.framework.messages.GenericMediaMetadata();
-  // metadata.subtitle = "Sub-Title";
-  // metadata.title = "Title";
-  // metadata.contentId = streamurl;
   request.media.metadata = metadata;
 
   return request;
