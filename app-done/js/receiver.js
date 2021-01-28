@@ -45,7 +45,7 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   if (streamurl.lastIndexOf(".mpd") >= 0) {
     request.media.contentType = StreamType.DASH;
     if (drm !== "") {
-      // castDebugLogger.error(" >>> Here is licesed  <<< ");
+      // castDebugLogger.error(" >>> Here is licesed for HLS <<< ");
       context
         .getPlayerManager()
         .setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
@@ -64,6 +64,18 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     request.media.contentType = StreamType.HLS;
     request.media.hlsSegmentFormat = cast.framework.messages.HlsSegmentFormat.TS;
     request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.TS;
+    // if (drm !== "") {
+    //   // castDebugLogger.error(" >>> Here is licesed for HLS <<< ");
+    //   context
+    //     .getPlayerManager()
+    //     .setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
+    //       if (request.media.customData && request.media.customData.licenseUrl) {
+    //         playbackConfig.licenseUrl = await request.media.customData.licenseUrl;
+    //         playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+    //       }
+    //       return playbackConfig;
+    //     });
+    // }
   }
 
   request.media.metadata = metadata;
