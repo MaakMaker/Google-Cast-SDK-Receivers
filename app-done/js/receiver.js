@@ -40,6 +40,8 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   if (request.media.customData) {
     drm = request.media.customData.licenseUrl;
   }
+  // let drm = request.media?.customData?.licenseUrl;
+
   // streamurl = request.media.contentUrl;
   // // let streamurl =
   // //   "https://npfltv.akamaized.net/media/movies/hybrikBulk_matchday6_wikkitouristsvsjigawagoldenstars_bb4bf3829496347492ff398e24f4ce37/stream.m3u8";
