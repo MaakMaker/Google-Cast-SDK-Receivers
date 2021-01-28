@@ -33,14 +33,15 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   if (request.media && !request.media.contentId) {
     request.media.contentId = request.media.contentId;
   }
-
+  let metadata = new cast.framework.messages.GenericMediaMetadata();
   let streamurl = request.media.contentId;
+  // let drm = request.media.customData.licenseUrl;
   // streamurl = request.media.contentUrl;
-
   // // let streamurl =
   // //   "https://npfltv.akamaized.net/media/movies/hybrikBulk_matchday6_wikkitouristsvsjigawagoldenstars_bb4bf3829496347492ff398e24f4ce37/stream.m3u8";
-  // let drm = request.media.customData.licenseUrl;
+
   // castDebugLogger.error(" >>> Testing <<< ");
+
   if (streamurl.lastIndexOf(".mpd") >= 0) {
     request.media.contentType = StreamType.DASH;
     if (drm !== "") {
@@ -65,7 +66,6 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.TS;
   }
 
-  let metadata = new cast.framework.messages.GenericMediaMetadata();
   request.media.metadata = metadata;
 
   return request;
