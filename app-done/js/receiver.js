@@ -83,7 +83,8 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     //     });
     // }
   }
-
+  metadata.title = request.media.metadata.channel_title;
+  metadata.poster = request.media.metadata.channel_logo;
   request.media.metadata = metadata;
 
   return request;
