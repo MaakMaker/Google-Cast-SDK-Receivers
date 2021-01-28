@@ -5,7 +5,7 @@ const StreamType = {
   DASH: "application/dash+xml",
   HLS: "application/x-mpegurl",
 };
-const TEST_STREAM_TYPE = StreamType.DASH;
+const TEST_STREAM_TYPE = StreamType.HLS;
 
 // Debug Logger
 const castDebugLogger = cast.debug.CastDebugLogger.getInstance();
@@ -32,17 +32,16 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     request.media.contentId = request.media.contentId;
   }
 
-  // let streamurl = request.media.contentId;
-  // let drm = request.media.customData.licenseUrl;
+  let streamurl =
+    "https://npfltv.akamaized.net/media/movies/hybrikBulk_day1_akwaunitedvsdakkadafc_fbbb89951e383c2f86c71c8a5f49674e/stream.m3u8";
 
-  request.media.contentUrl = item.stream.hls_ts;
+  streamurl = request.media.contentUrl;
   request.media.hlsSegmentFormat = cast.framework.messages.HlsSegmentFormat.TS;
   request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.TS;
   let metadata = new cast.framework.messages.GenericMediaMetadata();
-  metadata.title = request.media.metadata.channel_title;
   metadata.subtitle = "Sub-Title";
   metadata.title = "Title";
-  request.media.contentId = streamurl;
+  metadata.contentId = streamurl;
   request.media.metadata = metadata;
 
   return request;
