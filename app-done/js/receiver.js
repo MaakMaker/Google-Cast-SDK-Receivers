@@ -2,7 +2,7 @@ const context = cast.framework.CastReceiverContext.getInstance();
 const playerManager = context.getPlayerManager();
 
 //Media Sample API Values
-const SAMPLE_URL = "/content.json";
+// const SAMPLE_URL = "/content.json";
 const StreamType = {
   DASH: "application/dash+xml",
   HLS: "application/x-mpegurl",
@@ -13,7 +13,7 @@ const castDebugLogger = cast.debug.CastDebugLogger.getInstance();
 const LOG_TAG = "MyAPP.LOG";
 
 // Enable debug logger and show a 'DEBUG MODE' overlay at top left corner.
-// castDebugLogger.setEnabled(true);
+castDebugLogger.setEnabled(true);
 
 // Show debug overlay
 // castDebugLogger.showDebugLogs(true);
@@ -35,54 +35,39 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
   }
 
   let streamurl = request.media.contentId;
-  castDebugLogger.error(
-    " >>> streamurl.lastIndexOf Streamurl <<< ",
-    streamurl.lastIndexOf("/mpd") >= 0
-  );
-  castDebugLogger.error(
-    " >>> streamurl.lastIndexOf Streamurl <<< ",
-    streamurl.lastIndexOf(".mpd") >= 0
-  );
-  castDebugLogger.error(
-    " >>> streamurl.lastIndexOf Streamurl <<< ",
-    streamurl.lastIndexOf("/Manifest") >= 0
-  );
-  castDebugLogger.error(
-    " >>> streamurl.lastIndexOf Streamurl <<< ",
-    streamurl.lastIndexOf("/mp4") >= 0
-  );
-
-  if (
-    streamurl.lastIndexOf("/mpd") >= 0 ||
-    streamurl.lastIndexOf(".mpd") >= 0 ||
-    streamurl.indexOf("/Manifest") >= 0 ||
-    streamurl.lastIndexOf(".mp4") >= 0
-  ) {
+  // let streamurl =
+  //   "https://npfltv.akamaized.net/media/movies/hybrikBulk_matchday6_wikkitouristsvsjigawagoldenstars_bb4bf3829496347492ff398e24f4ce37/stream.m3u8";
+  let drm = request.media.customData.licenseUrl;
+  // castDebugLogger.error(" >>> Testing <<< ", drm !== "");
+  if (streamurl.lastIndexOf(".mpd") >= 0) {
     request.media.contentType = StreamType.DASH;
-    castDebugLogger.error(" >>> Here is Dash <<< ");
-    context.getPlayerManager().setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
-      castDebugLogger.error(" >>> req <<< ", loadRequest);
-      if (request.media.customData && request.media.customData.licenseUrl) {
-        playbackConfig.licenseUrl = await request.media.customData.licenseUrl;
-        playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
-        // playbackConfig.licenseRequestHandler = (requestInfo) => {
-        //   requestInfo.withCredentials = true;
-        // };
-      }
-
-      return playbackConfig;
-    });
+    if (drm !== "") {
+      // castDebugLogger.error(" >>> Here is licesed  <<< ");
+      context
+        .getPlayerManager()
+        .setMediaPlaybackInfoHandler(async (loadRequest, playbackConfig) => {
+          if (request.media.customData && request.media.customData.licenseUrl) {
+            playbackConfig.licenseUrl = await request.media.customData.licenseUrl;
+            playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+            // playbackConfig.licenseRequestHandler = (requestInfo) => {
+            //   requestInfo.withCredentials = true;
+            // };
+          }
+          return playbackConfig;
+        });
+    }
   } else if (streamurl.lastIndexOf(".m3u8") >= 0) {
-    request.media.contentType = StreamType.HLS;
     castDebugLogger.error(" >>> Here is HLS <<< ");
+    request.media.contentType = StreamType.HLS;
     request.media.hlsSegmentFormat = cast.framework.messages.HlsSegmentFormat.MPEG2_TS;
     request.media.hlsVideoSegmentFormat = cast.framework.messages.HlsVideoSegmentFormat.MPEG2_TS;
   }
 
   let metadata = new cast.framework.messages.GenericMediaMetadata();
   metadata.title = request.media.metadata.channel_title;
-  // metadata.subtitle = request.media.metadata.channel_no;
-  // request.media.contentType = StreamType.DASH;
+  // metadata.subtitle = "Sub-Title";
+  // metadata.title = "Title";
+  // request.media.contentId = streamurl;
   request.media.metadata = metadata;
 
   return request;
