@@ -44,7 +44,7 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
 
   if (streamurl.lastIndexOf(".mpd") >= 0) {
     request.media.contentType = StreamType.DASH;
-    if (drm !== "") {
+    if (drm) {
       // castDebugLogger.error(" >>> Here is licesed for HLS <<< ");
       context
         .getPlayerManager()
