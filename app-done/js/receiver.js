@@ -65,6 +65,10 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
           return playbackConfig;
         });
     }
+    setTimeout(function () {
+      $("#splash_screen").hide();
+      $("#player_screen").show();
+    }, 5000);
   } else if (streamurl.lastIndexOf(".m3u8") >= 0) {
     // castDebugLogger.error(" >>> Here is HLS <<< ");
     request.media.contentType = StreamType.HLS;
@@ -82,6 +86,10 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, (r
     //       return playbackConfig;
     //     });
     // }
+    setTimeout(function () {
+      $("#splash_screen").hide();
+      $("#player_screen").show();
+    }, 5000);
   }
   metadata.title = request.media.metadata.channel_title;
   metadata.poster = request.media.metadata.channel_logo;

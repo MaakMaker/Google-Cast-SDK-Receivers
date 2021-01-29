@@ -5,26 +5,68 @@
   <meta charset="utf-8">
   <title>Cast CAF Receiver</title>
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+
+  <!-- <link href="css/cast.css" rel="stylesheet"> -->
+  <link href="css/screen.css" rel="stylesheet">
   <!-- Cast Debug Logger -->
   <script src="//www.gstatic.com/cast/sdk/libs/devtools/debug_layer/caf_receiver_logger.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 </head>
 
-<style>
-  cast-media-player {
-    /* --theme-hue: 100; */
-    /* --progress-color: rgb(0, 255, 0); */
-    /* --splash-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREtKlPneLDVVN6lqHbzCQ5ubLg5PfHRPPpGQ&usqp=CAU'); */
-    --splash-image: url('./images/logo-lg.png');
-    /* --playback-logo-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREtKlPneLDVVN6lqHbzCQ5ubLg5PfHRPPpGQ&usqp=CAU'); */
-    /* --splash-size: cover; */
-  }
-</style>
 
-<body>
-  <cast-media-player></cast-media-player>
-  <footer>
-    <script src="js/receiver.js"></script>
-  </footer>
+
+<body style="overflow:hidden;">
+
+  <!-- Launcher Screen One -->
+  <div class="cc-launcher-wrap cc-launcher-1" id="splash_screen" style="background-image: url(images/background.png);">
+    <div id="channel_data" style="color: red;"></div>
+    <div class="cc-table text-center">
+      <div class="cc-table-row">
+        <div class="cc-table-cell align-middle">
+          <img src="images/logo-lg.png" width="300" />
+          <div><img src="images/icon.png" alt="stream" class="icon">
+            <p class="heading">Ready to Cast</p>
+          </div>
+          <div class="bottom-wrapper">
+            <div class="black-block">
+              <div class="bk-top">
+                <div class="bk-col-1 text-left">
+                  <div class="channel-number" id="channel_no"></div>
+                </div>
+                <div class="bk-col-1 text-center">
+                  <img src="images/diamond.png" class="premium-icon" id="is_premium" style="display: none;">
+                </div>
+                <div class="bk-col-1 text-right">
+                  <div class="channel-quality" id="is_hd"></div>
+                </div>
+              </div>
+              <div class="bk-middle">
+                <div class="box-image"><img src="images/logo.png" id="channel_logo"></div>
+              </div>
+              <div class="bk-btm">
+                <div class="box-title" id="channel_title"></div>
+              </div>
+            </div>
+            <div class="loader-wrap">
+              <div class="loader"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Of Launcher Screen One -->
+  <div id="player_screen" class="player-screen cc-pause" style="display: none;">
+
+
+    <cast-media-player></cast-media-player>
+  </div>
+
+  <!-- <footer> -->
+  <script src="js/receiver.js"></script>
+  <!-- </footer> -->
+
 </body>
 
 </html>

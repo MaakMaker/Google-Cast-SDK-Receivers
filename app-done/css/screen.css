@@ -1,0 +1,200 @@
+html,
+body {
+  height: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+.cc-launcher-1 {
+  background-image: url(images/background.png);
+}
+
+.cc-launcher-wrap {
+  height: 100%;
+  color: #fff;
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.img {
+  max-width: 100%;
+  height: auto;
+  border: none;
+}
+
+.icon {
+  width: 50px;
+}
+
+.heading {
+  font-size: 45px;
+  font-weight: 650;
+  color: white;
+  display: inline-block;
+  margin-left: 16px;
+  margin-top: 18px;
+}
+
+.mini-logo {
+  margin-top: 75px;
+  width: 100px;
+}
+
+.cc-table-cell.align-middle {
+  vertical-align: middle;
+}
+
+.cc-table-cell {
+  display: table-cell;
+  position: relative;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.cc-table {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+.cc-table-row {
+  display: table-row;
+  height: 100%;
+}
+
+.bottom-wrapper {
+  position: absolute;
+  right: 50px;
+  width: 250px;
+  bottom: 50px;
+}
+
+.black-block {
+  background-color: #000;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+.bk-top {
+  overflow: hidden;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.bk-col-1 {
+  float: left;
+  width: 33.33%;
+}
+
+.bk-middle {
+  margin-bottom: 10px;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.box-title {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.box-image {
+  height: 120px;
+  margin-bottom: 10px;
+  line-height: 120px;
+}
+
+.three-boxes {
+  height: 30px;
+  margin-bottom: 10px;
+  line-height: 30px;
+}
+
+.box-image img {
+  vertical-align: middle;
+  display: inline-block;
+  max-height: 50%;
+  max-width: 50%;
+}
+
+.channel-number {
+  color: white;
+}
+
+.channel-quality {
+  color: #e91c23;
+}
+
+.premium-icon {
+  height: 22px;
+}
+
+.cc-3-body {
+  position: relative;
+  padding: 35px 0 0;
+}
+
+.loader {
+  height: 10px;
+  position: relative;
+  overflow: hidden;
+  background-color: #bebebe;
+}
+
+.loader:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 10px;
+  background-color: #ea0609;
+  animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+  50% {
+    width: 30%;
+  }
+  70% {
+    width: 70%;
+  }
+  80% {
+    left: 50%;
+  }
+  95% {
+    left: 120%;
+  }
+  to {
+    left: 100%;
+  }
+}
